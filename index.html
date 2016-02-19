@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Chocobo Training Calculator</title>
+    
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/cexc.css">
+  </head>
+  <body>
+    <header>
+      <section class="container">
+        <h1><small>Final Fantasy XIV</small> Chocobo Training Calculator</h1>
+        <p>Enter your Chocobo's Rank and Experience Points into the below fields to see your progress towards Rank 20.</p>
+        <div class="row">
+          <div class="col-xs-12 col-md-4">
+            <input autofocus data-bind="valueUpdate: 'input', value: level" class="form-control input-lg" type="number" id="level" min="0" max="19" placeholder="Rank (0-19)" />
+            <br class="visible-xs visible-sm">
+          </div>
+          <div class="col-xs-12 col-md-4">
+            <input data-bind="disable: !level(), valueUpdate: 'input', value: experience, attr: { max: experienceMax, placeholder: 'Experience (0-' + experienceMax() + ')' }" class="form-control input-lg" type="number" id="experience" min="0" max="99" placeholder="Experience" disabled />
+            <br class="visible-xs visible-sm">
+          </div>
+          <div class="col-xs-12 col-md-4">
+            <button class="btn btn-lg btn-primary" id="calculate" data-bind="disable: !level(), click: calculate" disabled>
+              Calculate
+            </button>
+            <br class="visible-xs visible-sm">
+          </div>
+        </div>
+      </section>
+    </header> 
+    
+    <!-- ko if: calculated -->
+    <main>
+      <section class="container">
+        <article data-bind="with: calculatedResult">
+          <div class="row">
+            <div class="col-xs-12 col-md-6">
+              <h4>Levelling Information</h4>
+              <p data-bind="with: training, visible: training.next.level != 0">
+                Good condition Stable training will award <strong class="lead" data-bind="text: next.expPer"></strong> experience points.
+                <br class="hidden-xs">
+                Training the Chocobo <strong class="lead" data-bind="text: next.repeat"></strong> more time<!-- ko if: next.repeat !== 1 -->s<!-- /ko --><sup data-bind="if: next.thavnairianOnion">&dagger;</sup> will get it to <strong>Rank <span data-bind="text: +next.level + 1"></span></strong>.
+                <br>
+                <span class="text-muted" data-bind="if: next.thavnairianOnion"><sup>&dagger;</sup> One training session must be with a Thavnairian Onion.</span>
+              </p>
+              <p data-bind="with: challenges">
+                Weekly Challenge Log entries will award <strong class="lead" data-bind="text: next.expFull"></strong> experience points.
+                <br class="hidden-xs">
+                Doing this for <strong class="lead" data-bind="text: next.repeat"></strong> more week<!-- ko if: next.repeat !== 1 -->s<!-- /ko --> will get it to <strong>Rank <span data-bind="text: +next.level + 1"></span></strong>.
+              </p>
+              <hr>
+              <p data-bind="visible: training.to10.repeat > 0">
+                Training the Chocobo another <strong class="lead" data-bind="text: training.to10.repeat"></strong> time<!-- ko if: training.to10.repeat !== 1 -->s<!-- /ko --> or completing <strong class="lead" data-bind="text: challenges.to10.repeat"></strong> more week<!-- ko if: challenges.to10.repeat !== 1 -->s<!-- /ko --> of Challenge Log entries will get it to <strong>Rank 10</strong>.
+              </p>
+              <p data-bind="visible: training.to10.repeat <= 0 && training.to15.repeat > 0">
+                Training the Chocobo another <strong class="lead" data-bind="text: training.to15.repeat"></strong> time<!-- ko if: training.to15.repeat !== 1 -->s<!-- /ko --> or completing <strong class="lead" data-bind="text: challenges.to15.repeat"></strong> more week<!-- ko if: challenges.to15.repeat !== 1 -->s<!-- /ko --> of Challenge Log entries will get it to <strong>Rank 15</strong>.
+              </p>
+              <p>
+                Training the Chocobo another <strong class="lead" data-bind="text: training.to20.repeat"></strong> time<!-- ko if: training.to20.repeat !== 1 -->s<!-- /ko --> or completing <strong class="lead" data-bind="text: challenges.to20.repeat"></strong> more week<!-- ko if: challenges.to20.repeat !== 1 -->s<!-- /ko --> of Challenge Log entries will get it to <strong>Rank 20</strong>.
+              </p>
+            </div>
+            <div class="col-xs-12 col-md-6">
+              <section data-bind="with: level.progress">
+                <h4>
+                  <strong>
+                    Next Level
+                  </strong>
+                  <span class="visible-sm-inline">&middot;</span>
+                  <br class="hidden-sm">
+                  <span data-bind="text: toNext + '%'"></span> (<span data-bind="text: (+$parent.level.currentExp).toLocaleString()"></span> / <span data-bind="text: $parent.level.full.toLocaleString()"></span>)
+                </h4>
+                <div class="progress">
+                  <div class="progress-bar progress-bar-warning" role="progressbar" data-bind="style: { width: toNext + '%' }"></div>
+                </div>
+                
+                <h4>
+                  <strong>
+                    Progress Towards Rank 10
+                  </strong>
+                  <span class="visible-sm-inline">&middot;</span>
+                  <br class="hidden-sm">
+                  <span data-bind="text: to10 + '%'"></span> (<span data-bind="text: to10 < 100 ? total.toLocaleString() : $parent.cumulative.level10.toLocaleString()"></span> / <span data-bind="text: $parent.cumulative.level10.toLocaleString()"></span>)
+                </h4>
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar" data-bind="css: { 'progress-bar-success': to10 >= 100 }, style: { width: to10 + '%' }"></div>
+                </div>
+                
+                <h4>
+                  <strong>
+                    Progress Towards Rank 15
+                  </strong>
+                  <span class="visible-sm-inline">&middot;</span>
+                  <br class="hidden-sm">
+                  <span data-bind="text: to15 + '%'"></span> (<span data-bind="text: to15 < 100 ? total.toLocaleString() : $parent.cumulative.level15.toLocaleString()"></span> / <span data-bind="text: $parent.cumulative.level15.toLocaleString()"></span>)
+                </h4>
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar" data-bind="css: { 'progress-bar-success': to15 >= 100 }, style: { width: to15 + '%' }"></div>
+                </div>
+                
+                <h4>
+                  <strong>
+                    Progress Towards Rank 20
+                  </strong>
+                  <span class="visible-sm-inline">&middot;</span>
+                  <br class="hidden-sm">
+                  <span data-bind="text: to20 + '%'"></span> (<span data-bind="text: total.toLocaleString()"></span> / <span data-bind="text: $parent.cumulative.level20.toLocaleString()"></span>)
+                </h4>
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar" data-bind="css: { 'progress-bar-success': to20 >= 100 }, style: { width: to20 + '%' }"></div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+    <!-- /ko -->
+    
+    <footer>
+      <section class="container">
+        <!-- ko if: calculated -->
+          <hr>
+        <!-- /ko -->
+        
+        <p data-bind="visible: !showExperienceTable()">
+          <a href="#" class="btn btn-link" data-bind="click: toggleExperienceTable">
+            <i class="fa fa-table"></i> Show Experience and Progression table
+          </a>
+        </p>
+        
+        <!-- ko if: showExperienceTable -->
+        <h3>Chocobo Experience and Progression Table</h3>
+        
+        <table class="table table-condensed table-striped">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Next</th>
+              <th>Cumulative</th>
+              <th>Exp. Progress</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- ko foreach: ranks -->
+            <tr>
+              <th data-bind="html: $index"></th>
+              <td data-bind="text: experience.toNext"></td>
+              <td data-bind="html: experience.soFar == 0 ? '&mdash;' : experience.soFar"></td>
+              <td data-bind="text: progress == '0%' ? '&mdash;' : progress"></td>
+            </tr>
+            <!-- /ko -->
+            <tr>
+              <th>20</th>
+              <td>&mdash;</td>
+              <td data-bind="text: $root.total().toLocaleString()"></td>
+              <td>100%</td>
+            </tr>
+          </tbody>
+        </table>
+        <!-- /ko -->
+      </section>
+    </footer>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js" crossorigin="anonymous"></script>
+    <script src="assets/cexc.js"></script>
+  </body>
+</html>
