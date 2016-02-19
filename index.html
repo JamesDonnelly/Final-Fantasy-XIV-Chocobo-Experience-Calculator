@@ -24,7 +24,9 @@
   <body>
     <header>
       <section class="container">
-        <h1><small>Final Fantasy XIV</small> Chocobo Training Calculator</h1>
+        <a href="http://jamesdonnelly.github.io/xiv-chocobo-raising/">
+          <h1><small>Final Fantasy XIV</small> Chocobo Training Calculator</h1>
+        </a>
         <p>Enter your Chocobo's Rank and Experience Points into the below fields to see your progress towards Rank 20.</p>
         <form class="row">
           <div class="col-xs-12 col-md-4">
@@ -32,7 +34,7 @@
             <br class="visible-xs visible-sm">
           </div>
           <div class="col-xs-12 col-md-4">
-            <input data-bind="disable: !level(), valueUpdate: 'input', value: experience, attr: { max: experienceMax, placeholder: 'Experience (0-' + experienceMax() + ')' }" class="form-control input-lg" type="number" id="experience" min="0" max="99" placeholder="Experience" disabled />
+            <input data-bind="disable: level() === null || level() < 0 || level() > 19, valueUpdate: 'input', value: experience, attr: { max: experienceMax, placeholder: 'Experience (0-' + experienceMax() + ')' }" class="form-control input-lg" type="number" id="experience" min="0" max="99" placeholder="Experience" disabled />
             <br class="visible-xs visible-sm">
           </div>
           <div class="col-xs-6 col-md-2">
