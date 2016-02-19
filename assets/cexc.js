@@ -95,12 +95,15 @@ var
     200
   ],
   
+  levelFromUrl = +getParameterByName("level"),
+  experienceFromUrl = validateExperience(+getParameterByName("experience")),
+  
   vm = {
     ranks: ko.observableArray([]),
     total: ko.observable(null),
     
-    level: ko.observable(10),
-    experience: ko.observable(729000),
+    level: ko.observable(levelFromUrl >= 0 && levelFromUrl <= 19 ? levelFromUrl : null),
+    experience: ko.observable(experienceFromUrl || null),
     experienceMax: ko.observable(null),
     
     calculate: calculate,
@@ -134,6 +137,8 @@ vm.level.subscribe(function(value) {
   }
   
   vm.experienceMax(experience.levels[value]);
+  
+  setUrl();
 });
 
 vm.experience.subscribe(function(value) {
@@ -144,17 +149,10 @@ vm.experience.subscribe(function(value) {
     vm.experience(null);
     return true;
   }
+  
+  vm.experience(validateExperience(value));
     
-  var
-    level = vm.level(),
-    max = level ? experience.levels[level] - 1 : experience.levels[experience.levels.length - 1] - 1
-  ;
-  
-  if (value < 0)
-    vm.experience(null);
-  
-  if (value > max)
-    vm.experience(max);
+  setUrl();
 });
 
 var 
@@ -323,6 +321,49 @@ function calculate() {
   
   calculatedResult(result);
   calculated(true);
+}
+
+function setUrl() {
+  // http://stackoverflow.com/a/19279268/1317805
+  if (history.pushState) {
+    var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?level=" + +vm.level() + "&experience=" + +vm.experience();
+    window.history.pushState({ path: newurl }, '', newurl);
+  }
+}
+
+function getParameterByName(name, url) {
+  // http://stackoverflow.com/a/901144/1317805
+  if (!url)
+    url = window.location.href;
+    
+  name = name.replace(/[\[\]]/g, "\\$&");
+  
+  var
+    regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+    results = regex.exec(url)
+  ;
+  
+  if (!results)
+    return null;
+  if (!results[2])
+    return '';
+    
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+function validateExperience(value) {
+  var
+    level = vm && vm.level ? vm.level() : +getParameterByName("level"),
+    max = level ? experience.levels[level] - 1 : experience.levels[experience.levels.length - 1] - 1
+  ;
+  
+  if (value < 0)
+    value = 0;
+  
+  if (value > max)
+    value = max;
+    
+  return value;
 }
 
 calculate();
