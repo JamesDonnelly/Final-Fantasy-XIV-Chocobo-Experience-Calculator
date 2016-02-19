@@ -25,19 +25,86 @@
             <input data-bind="disable: !level(), valueUpdate: 'input', value: experience, attr: { max: experienceMax, placeholder: 'Experience (0-' + experienceMax() + ')' }" class="form-control input-lg" type="number" id="experience" min="0" max="99" placeholder="Experience" disabled />
             <br class="visible-xs visible-sm">
           </div>
-          <div class="col-xs-12 col-md-4">
+          <div class="col-xs-6 col-md-2">
             <button type="submit" class="btn btn-lg btn-primary" id="calculate" data-bind="disable: level() < 0 || level() > 19, click: calculate">
               Calculate
+            </button>
+            <br class="visible-xs visible-sm">
+          </div>
+          <div class="col-xs-6 col-md-2">
+            <button type="reset" class="btn btn-lg btn-default" id="clear" data-bind="disable: !calculated() && level() === null && !experience(), click: clear">
+              Clear
             </button>
             <br class="visible-xs visible-sm">
           </div>
         </form>
       </section>
     </header> 
-    
-    <!-- ko if: calculated -->
     <main>
       <section class="container">
+        <!-- ko if: !calculated() -->
+        <h2>Hello!</h2>
+        <p>First off, thanks for taking a look. If you're interested in a few statistics about your Final Fantasy XIV Chocobo, simply enter its current Rank and Experience (optional) into the two fields above and hit Calculate. Feel free to play around with other Ranks and Experience values, too!</p>
+        <p>The figures presented by this resource do not take any other factors into consideration when levelling a Chocobo other than Training (via a Chocobo Stable) and completing Challenge Log entries; heck, it doesn't even combine the two.</p>
+        <h2>Sharing</h2>
+        <p>You can share your Chocobo's statistics through the page's URL. Every time the Rank and Experience values are changed, corresponding values will be added to the page's URL:</p>
+        <figure>
+          <p>
+            <strong>Level</strong>
+            <br>
+            <code class="lead"><!-- ko text: window.location.origin --><!-- /ko -->?rank=8</code>
+          </p>
+          <p>
+            <strong>Level and Experience</strong>
+            <br>
+            <code class="lead"><!-- ko text: window.location.origin --><!-- /ko -->?rank=13&experience=1234567</code>
+          </p>
+        </figure>
+        <h2>Examples</h2>
+        <p>Below is a list of examples with interesting corresponding statistics.</p>
+        <ul class="lead">
+          <li>
+            <a href="/?rank=0">
+              <strong>Rank 0</strong>
+            </a>
+            &middot;
+            No progress whatsoever.
+          </li>
+          
+          <li>
+            <a href="/?rank=15&experience=1058000">
+              <strong>Rank 10</strong>
+            </a>
+            &middot;
+            Half way towards Rank 20 (Challenge Log).
+          </li>
+          
+          <li>
+            <a href="/?rank=13&experience=1500000">
+              <strong>Rank 13; 67.65%</strong>
+            </a>
+            &middot;
+            Half way towards Rank 20 (Good condition Stable training).
+          </li>
+          
+          <li>
+            <a href="/?rank=15&experience=1058000">
+              <strong>Rank 15; 39.11%</strong>
+            </a>
+            &middot;
+            Half way towards Rank 20 (raw experience).
+          </li>
+          
+          <li>
+            <a href="/?rank=19&experience=3619999">
+              <strong>Rank 19; 99.99%</strong>
+            </a>
+            &middot;
+            1 experience away from Rank 20; just because it looks nice.
+          </li>
+        </ul>
+        <!-- /ko -->
+        <!-- ko if: calculated -->
         <article data-bind="with: calculatedResult">
           <div class="row">
             <div class="col-xs-12 col-md-6">
@@ -228,9 +295,9 @@
             </div>
           </div>
         </article>
+        <!-- /ko -->
       </section>
     </main>
-    <!-- /ko -->
     
     <footer>
       <section class="container">

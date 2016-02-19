@@ -95,17 +95,18 @@ var
     200
   ],
   
-  levelFromUrl = +getParameterByName("level"),
+  levelFromUrl = getParameterByName("rank"),
   experienceFromUrl = validateExperience(+getParameterByName("experience")),
   
   vm = {
     ranks: ko.observableArray([]),
     total: ko.observable(null),
     
-    level: ko.observable(levelFromUrl >= 0 && levelFromUrl <= 19 ? levelFromUrl : null),
+    level: ko.observable(levelFromUrl !== null && +levelFromUrl >= 0 && +levelFromUrl <= 19 ? +levelFromUrl : null),
     experience: ko.observable(experienceFromUrl || null),
     experienceMax: ko.observable(null),
     
+    clear: clear,
     calculate: calculate,
     calculated: ko.observable(false),
     
@@ -323,10 +324,25 @@ function calculate() {
   calculated(true);
 }
 
+function clear() {
+  vm.level(null);
+  vm.experience(null);
+  vm.experienceMax(experience.cumulative[experience.cumulative.length - 1]);
+  vm.calculated(false);
+  setUrl();
+}
+
 function setUrl() {
   // http://stackoverflow.com/a/19279268/1317805
   if (history.pushState) {
-    var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?level=" + +vm.level() + "&experience=" + +vm.experience();
+    var urlQuery = "";
+    
+    if (vm.level() !== null && +vm.level() >= 0 && +vm.level() <= 19) {
+      urlQuery = "?rank=" + +vm.level() + "&experience=" + +vm.experience()
+    }
+    
+    var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + urlQuery;
+    
     window.history.pushState({ path: newurl }, '', newurl);
   }
 }
@@ -353,9 +369,13 @@ function getParameterByName(name, url) {
 
 function validateExperience(value) {
   var
-    level = vm && vm.level ? vm.level() : +getParameterByName("level"),
+    level = vm && vm.level ? vm.level() : getParameterByName("rank"),
     max = level ? experience.levels[level] - 1 : experience.levels[experience.levels.length - 1] - 1
   ;
+  
+  if (level === null || level < 0 || level > 19) {
+    return null;
+  }
   
   if (value < 0)
     value = 0;
