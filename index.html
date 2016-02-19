@@ -3,6 +3,9 @@
   <head>
     <title>Chocobo Training Calculator</title>
     
+    <link rel="image_src" href="favicon.png">
+    <link rel="icon" type="image/png" href="favicon.png">
+    
     <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
@@ -23,7 +26,7 @@
             <br class="visible-xs visible-sm">
           </div>
           <div class="col-xs-12 col-md-4">
-            <button type="submit" class="btn btn-lg btn-primary" id="calculate" data-bind="disable: !level(), click: calculate" disabled>
+            <button type="submit" class="btn btn-lg btn-primary" id="calculate" data-bind="disable: level() < 0 || level() > 19, click: calculate">
               Calculate
             </button>
             <br class="visible-xs visible-sm">
@@ -121,7 +124,7 @@
               <section data-bind="with: training">
                 <h2>Stable Training Progression</h2>
                 <p class="text-muted">These figures assume training in a Good condition Chocobo Stable.</p>
-                <h4>
+                <h4 data-bind="visible: next.level != 0">
                   <strong>
                     Next Level
                   </strong>
@@ -129,7 +132,7 @@
                   <br class="hidden-sm">
                   <span data-bind="text: next.toNext + '%'"></span> (<span data-bind="text: (+next.total - +next.repeat).toLocaleString()"></span> / <span data-bind="text: next.total.toLocaleString()"></span> training sessions)
                 </h4>
-                <div class="progress">
+                <div data-bind="visible: next.level != 0" class="progress">
                   <div class="progress-bar progress-bar-warning" role="progressbar" data-bind="style: { width: next.toNext + '%' }"></div>
                 </div>
                 
