@@ -104,7 +104,7 @@ var
     
     level: ko.observable(levelFromUrl !== null && +levelFromUrl >= 0 && +levelFromUrl <= 19 ? +levelFromUrl : null),
     experience: ko.observable(experienceFromUrl || null),
-    experienceMax: ko.observable(null),
+    experienceMax: ko.observable(levelFromUrl !== null && +levelFromUrl >= 0 && +levelFromUrl <= 19 ? experience.levels[+levelFromUrl] - 1 : null),
     
     clear: clear,
     calculate: calculate,
@@ -127,17 +127,17 @@ vm.level.subscribe(function(value) {
   
   if (typeof value === 'undefined' || value === '') {
     vm.level(null);
-    vm.experienceMax(experience.levels[experience.levels.length - 1]);
+    vm.experienceMax(experience.levels[experience.levels.length - 1] - 1);
     return true;
   }
   
   if (value < 0 || value > 19) {
     vm.level(null);
-    vm.experienceMax(experience.levels[experience.levels.length - 1]);
+    vm.experienceMax(experience.levels[experience.levels.length - 1] - 1);
     return true;
   }
   
-  vm.experienceMax(experience.levels[value]);
+  vm.experienceMax(experience.levels[value] - 1);
   
   setUrl();
 });
@@ -175,8 +175,6 @@ for (var i = 0; i < result.length; i++) {
 
 ranks(result);
 total(experience.cumulative[experience.cumulative.length - 1]);
-
-vm.experienceMax(experience.levels[experience.levels.length  - 1] - 1);
 
 ko.applyBindings(vm);
 
@@ -327,7 +325,7 @@ function calculate() {
 function clear() {
   vm.level(null);
   vm.experience(null);
-  vm.experienceMax(experience.cumulative[experience.cumulative.length - 1]);
+  vm.experienceMax(experience.cumulative[experience.cumulative.length - 1] - 1);
   vm.calculated(false);
   setUrl();
 }
