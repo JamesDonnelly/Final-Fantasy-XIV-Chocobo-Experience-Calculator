@@ -13,7 +13,7 @@
       <section class="container">
         <h1><small>Final Fantasy XIV</small> Chocobo Training Calculator</h1>
         <p>Enter your Chocobo's Rank and Experience Points into the below fields to see your progress towards Rank 20.</p>
-        <div class="row">
+        <form class="row">
           <div class="col-xs-12 col-md-4">
             <input autofocus data-bind="valueUpdate: 'input', value: level" class="form-control input-lg" type="number" id="level" min="0" max="19" placeholder="Rank (0-19)" />
             <br class="visible-xs visible-sm">
@@ -23,12 +23,12 @@
             <br class="visible-xs visible-sm">
           </div>
           <div class="col-xs-12 col-md-4">
-            <button class="btn btn-lg btn-primary" id="calculate" data-bind="disable: !level(), click: calculate" disabled>
+            <button type="submit" class="btn btn-lg btn-primary" id="calculate" data-bind="disable: !level(), click: calculate" disabled>
               Calculate
             </button>
             <br class="visible-xs visible-sm">
           </div>
-        </div>
+        </form>
       </section>
     </header> 
     
@@ -38,7 +38,7 @@
         <article data-bind="with: calculatedResult">
           <div class="row">
             <div class="col-xs-12 col-md-6">
-              <h4>Levelling Information</h4>
+              <h2>Levelling Information</h2>
               <p data-bind="with: training, visible: training.next.level != 0">
                 Good condition Stable training will award <strong class="lead" data-bind="text: next.expPer"></strong> experience points.
                 <br class="hidden-xs">
@@ -47,30 +47,34 @@
                 <span class="text-muted" data-bind="if: next.thavnairianOnion"><sup>&dagger;</sup> One training session must be with a Thavnairian Onion.</span>
               </p>
               <p data-bind="with: challenges">
-                Weekly Challenge Log entries will award <strong class="lead" data-bind="text: next.expFull"></strong> experience points.
+                Weekly Challenge Log entries will award <strong class="lead" data-bind="text: next.expFull.toLocaleString()"></strong> experience points.
                 <br class="hidden-xs">
                 Doing this for <strong class="lead" data-bind="text: next.repeat"></strong> more week<!-- ko if: next.repeat !== 1 -->s<!-- /ko --> will get it to <strong>Rank <span data-bind="text: +next.level + 1"></span></strong>.
               </p>
               <hr>
               <p data-bind="visible: training.to10.repeat > 0">
-                Training the Chocobo another <strong class="lead" data-bind="text: training.to10.repeat"></strong> time<!-- ko if: training.to10.repeat !== 1 -->s<!-- /ko --> or completing <strong class="lead" data-bind="text: challenges.to10.repeat"></strong> more week<!-- ko if: challenges.to10.repeat !== 1 -->s<!-- /ko --> of Challenge Log entries will get it to <strong>Rank 10</strong>.
+                Training the Chocobo another <strong class="lead" data-bind="text: training.to10.repeat.toLocaleString()"></strong> time<!-- ko if: training.to10.repeat !== 1 -->s<!-- /ko --> or completing <strong class="lead" data-bind="text: challenges.to10.repeat.toLocaleString()"></strong> more week<!-- ko if: challenges.to10.repeat !== 1 -->s<!-- /ko --> of Challenge Log entries will get it to <strong>Rank 10</strong>.
               </p>
               <p data-bind="visible: training.to10.repeat <= 0 && training.to15.repeat > 0">
-                Training the Chocobo another <strong class="lead" data-bind="text: training.to15.repeat"></strong> time<!-- ko if: training.to15.repeat !== 1 -->s<!-- /ko --> or completing <strong class="lead" data-bind="text: challenges.to15.repeat"></strong> more week<!-- ko if: challenges.to15.repeat !== 1 -->s<!-- /ko --> of Challenge Log entries will get it to <strong>Rank 15</strong>.
+                Training the Chocobo another <strong class="lead" data-bind="text: training.to15.repeat.toLocaleString()"></strong> time<!-- ko if: training.to15.repeat !== 1 -->s<!-- /ko --> or completing <strong class="lead" data-bind="text: challenges.to15.repeat.toLocaleString()"></strong> more week<!-- ko if: challenges.to15.repeat !== 1 -->s<!-- /ko --> of Challenge Log entries will get it to <strong>Rank 15</strong>.
               </p>
+              <!-- ko if: training.to10.repeat > 0 || training.to15.repeat > 0 -->
+              <hr>
+              <!-- /ko -->
               <p>
-                Training the Chocobo another <strong class="lead" data-bind="text: training.to20.repeat"></strong> time<!-- ko if: training.to20.repeat !== 1 -->s<!-- /ko --> or completing <strong class="lead" data-bind="text: challenges.to20.repeat"></strong> more week<!-- ko if: challenges.to20.repeat !== 1 -->s<!-- /ko --> of Challenge Log entries will get it to <strong>Rank 20</strong>.
+                Training the Chocobo another <strong class="lead" data-bind="text: training.to20.repeat.toLocaleString()"></strong> time<!-- ko if: training.to20.repeat !== 1 -->s<!-- /ko --> or completing <strong class="lead" data-bind="text: challenges.to20.repeat.toLocaleString()"></strong> more week<!-- ko if: challenges.to20.repeat !== 1 -->s<!-- /ko --> of Challenge Log entries will get it to <strong>Rank 20</strong>.
               </p>
             </div>
             <div class="col-xs-12 col-md-6">
               <section data-bind="with: level.progress">
+                <h2>Experience Progression</h2>
                 <h4>
                   <strong>
                     Next Level
                   </strong>
                   <span class="visible-sm-inline">&middot;</span>
                   <br class="hidden-sm">
-                  <span data-bind="text: toNext + '%'"></span> (<span data-bind="text: (+$parent.level.currentExp).toLocaleString()"></span> / <span data-bind="text: $parent.level.full.toLocaleString()"></span>)
+                  <span data-bind="text: toNext + '%'"></span> (<span data-bind="text: (+$parent.level.currentExp).toLocaleString()"></span> / <span data-bind="text: $parent.level.full.toLocaleString()"></span> experience)
                 </h4>
                 <div class="progress">
                   <div class="progress-bar progress-bar-warning" role="progressbar" data-bind="style: { width: toNext + '%' }"></div>
@@ -82,7 +86,7 @@
                   </strong>
                   <span class="visible-sm-inline">&middot;</span>
                   <br class="hidden-sm">
-                  <span data-bind="text: to10 + '%'"></span> (<span data-bind="text: to10 < 100 ? total.toLocaleString() : $parent.cumulative.level10.toLocaleString()"></span> / <span data-bind="text: $parent.cumulative.level10.toLocaleString()"></span>)
+                  <span data-bind="text: to10 + '%'"></span> (<span data-bind="text: to10 < 100 ? total.toLocaleString() : $parent.cumulative.level10.toLocaleString()"></span> / <span data-bind="text: $parent.cumulative.level10.toLocaleString()"></span> experience)
                 </h4>
                 <div class="progress">
                   <div class="progress-bar" role="progressbar" data-bind="css: { 'progress-bar-success': to10 >= 100 }, style: { width: to10 + '%' }"></div>
@@ -94,7 +98,7 @@
                   </strong>
                   <span class="visible-sm-inline">&middot;</span>
                   <br class="hidden-sm">
-                  <span data-bind="text: to15 + '%'"></span> (<span data-bind="text: to15 < 100 ? total.toLocaleString() : $parent.cumulative.level15.toLocaleString()"></span> / <span data-bind="text: $parent.cumulative.level15.toLocaleString()"></span>)
+                  <span data-bind="text: to15 + '%'"></span> (<span data-bind="text: to15 < 100 ? total.toLocaleString() : $parent.cumulative.level15.toLocaleString()"></span> / <span data-bind="text: $parent.cumulative.level15.toLocaleString()"></span> experience)
                 </h4>
                 <div class="progress">
                   <div class="progress-bar" role="progressbar" data-bind="css: { 'progress-bar-success': to15 >= 100 }, style: { width: to15 + '%' }"></div>
@@ -106,10 +110,116 @@
                   </strong>
                   <span class="visible-sm-inline">&middot;</span>
                   <br class="hidden-sm">
-                  <span data-bind="text: to20 + '%'"></span> (<span data-bind="text: total.toLocaleString()"></span> / <span data-bind="text: $parent.cumulative.level20.toLocaleString()"></span>)
+                  <span data-bind="text: to20 + '%'"></span> (<span data-bind="text: total.toLocaleString()"></span> / <span data-bind="text: $parent.cumulative.level20.toLocaleString()"></span> experience)
                 </h4>
                 <div class="progress">
                   <div class="progress-bar" role="progressbar" data-bind="css: { 'progress-bar-success': to20 >= 100 }, style: { width: to20 + '%' }"></div>
+                </div>
+              </section>
+            </div>
+            <div class="col-xs-12 col-md-6">
+              <section data-bind="with: training">
+                <h2>Stable Training Progression</h2>
+                <p class="text-muted">These figures assume training in a Good condition Chocobo Stable.</p>
+                <h4>
+                  <strong>
+                    Next Level
+                  </strong>
+                  <span class="visible-sm-inline">&middot;</span>
+                  <br class="hidden-sm">
+                  <span data-bind="text: next.toNext + '%'"></span> (<span data-bind="text: (+next.total - +next.repeat).toLocaleString()"></span> / <span data-bind="text: next.total.toLocaleString()"></span> training sessions)
+                </h4>
+                <div class="progress">
+                  <div class="progress-bar progress-bar-warning" role="progressbar" data-bind="style: { width: next.toNext + '%' }"></div>
+                </div>
+                
+                <h4>
+                  <strong>
+                    Progress Towards Rank 10
+                  </strong>
+                  <span class="visible-sm-inline">&middot;</span>
+                  <br class="hidden-sm">
+                  <span data-bind="text: to10.progress + '%'"></span> (<span data-bind="text: to10.progress < 100 ? (+to10.total - +to10.repeat).toLocaleString() : to10.total.toLocaleString()"></span> / <span data-bind="text: to10.total.toLocaleString()"></span> training sessions)
+                </h4>
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar" data-bind="css: { 'progress-bar-success': to10.progress >= 100 }, style: { width: to10.progress + '%' }"></div>
+                </div>
+                
+                <h4>
+                  <strong>
+                    Progress Towards Rank 15
+                  </strong>
+                  <span class="visible-sm-inline">&middot;</span>
+                  <br class="hidden-sm">
+                  <span data-bind="text: to15.progress + '%'"></span> (<span data-bind="text: to15.progress < 100 ? (+to15.total - +to15.repeat).toLocaleString() : to15.total.toLocaleString()"></span> / <span data-bind="text: to15.total.toLocaleString()"></span> training sessions)
+                </h4>
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar" data-bind="css: { 'progress-bar-success': to15.progress >= 100 }, style: { width: to15.progress + '%' }"></div>
+                </div>
+                
+                <h4>
+                  <strong>
+                    Progress Towards Rank 20
+                  </strong>
+                  <span class="visible-sm-inline">&middot;</span>
+                  <br class="hidden-sm">
+                  <span data-bind="text: to20.progress + '%'"></span> (<span data-bind="text: to20.progress < 100 ? (+to20.total - +to20.repeat).toLocaleString() : to20.total.toLocaleString()"></span> / <span data-bind="text: to20.total.toLocaleString()"></span> training sessions)
+                </h4>
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar" data-bind="css: { 'progress-bar-success': to20.progress >= 100 }, style: { width: to20.progress + '%' }"></div>
+                </div>
+              </section>
+            </div>
+            <div class="col-xs-12 col-md-6">
+              <section data-bind="with: challenges">
+                <h2>Challenge Log Progression</h2>
+                <p class="text-muted">These figures combine the Bosom Buddies I and II weekly Challenges.</p>
+                <h4>
+                  <strong>
+                    Next Level
+                  </strong>
+                  <span class="visible-sm-inline">&middot;</span>
+                  <br class="hidden-sm">
+                  <span data-bind="text: next.progress + '%'"></span> (<span data-bind="text: (7 - +next.repeat).toLocaleString()"></span> / 7 weeks completed)
+                </h4>
+                <div class="progress">
+                  <div class="progress-bar progress-bar-warning" role="progressbar" data-bind="style: { width: next.progress + '%' }"></div>
+                </div>
+                
+                <h4>
+                  <strong>
+                    Progress Towards Rank 10
+                  </strong>
+                  <span class="visible-sm-inline">&middot;</span>
+                  <br class="hidden-sm">
+                  <span data-bind="text: to10.progress + '%'"></span> (<span data-bind="text: to10.progress < 100 ? (+to10.total - +to10.repeat).toLocaleString() : to10.total.toLocaleString()"></span> / <span data-bind="text: to10.total.toLocaleString()"></span> weeks completed)
+                </h4>
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar" data-bind="css: { 'progress-bar-success': to10.progress >= 100 }, style: { width: to10.progress + '%' }"></div>
+                </div>
+                
+                <h4>
+                  <strong>
+                    Progress Towards Rank 15
+                  </strong>
+                  <span class="visible-sm-inline">&middot;</span>
+                  <br class="hidden-sm">
+                  <span data-bind="text: to15.progress + '%'"></span> (<span data-bind="text: to15.progress < 100 ? (+to15.total - +to15.repeat).toLocaleString() : to15.total.toLocaleString()"></span> / <span data-bind="text: to15.total.toLocaleString()"></span> weeks completed)
+                </h4>
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar" data-bind="css: { 'progress-bar-success': to15.progress >= 100 }, style: { width: to15.progress + '%' }"></div>
+                </div>
+                
+                <h4>
+                  <strong>
+                    Progress Towards Rank 20
+                  </strong>
+                  <span class="visible-sm-inline">&middot;</span>
+                  <br class="hidden-sm">
+                  <span data-bind="text: to20.progress + '%'"></span> (<span data-bind="text: to20.progress < 100 ? (+to20.total - +to20.repeat).toLocaleString() : to20.total.toLocaleString()"></span> / <span data-bind="text: to20.total.toLocaleString()"></span> weeks completed)
+                </h4>
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar" data-bind="css: { 'progress-bar-success': to20.progress >= 100 }, style: { width: to20.progress + '%' }"></div>
                 </div>
               </section>
             </div>
@@ -121,46 +231,7 @@
     
     <footer>
       <section class="container">
-        <!-- ko if: calculated -->
-          <hr>
-        <!-- /ko -->
-        
-        <p data-bind="visible: !showExperienceTable()">
-          <a href="#" class="btn btn-link" data-bind="click: toggleExperienceTable">
-            <i class="fa fa-table"></i> Show Experience and Progression table
-          </a>
-        </p>
-        
-        <!-- ko if: showExperienceTable -->
-        <h3>Chocobo Experience and Progression Table</h3>
-        
-        <table class="table table-condensed table-striped">
-          <thead>
-            <tr>
-              <th>Rank</th>
-              <th>Next</th>
-              <th>Cumulative</th>
-              <th>Exp. Progress</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- ko foreach: ranks -->
-            <tr>
-              <th data-bind="html: $index"></th>
-              <td data-bind="text: experience.toNext"></td>
-              <td data-bind="html: experience.soFar == 0 ? '&mdash;' : experience.soFar"></td>
-              <td data-bind="text: progress == '0%' ? '&mdash;' : progress"></td>
-            </tr>
-            <!-- /ko -->
-            <tr>
-              <th>20</th>
-              <td>&mdash;</td>
-              <td data-bind="text: $root.total().toLocaleString()"></td>
-              <td>100%</td>
-            </tr>
-          </tbody>
-        </table>
-        <!-- /ko -->
+        <p class="text-muted">Created by James Donnelly (<a href="https://twitter.com/inb4">@inb4</a> on Twitter)</p>
       </section>
     </footer>
     

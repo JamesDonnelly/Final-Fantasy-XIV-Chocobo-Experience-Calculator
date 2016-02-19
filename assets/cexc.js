@@ -184,7 +184,7 @@ ko.applyBindings(vm);
 function calculate() {
   var
     level = vm.level(),
-    exp = vm.experience(),
+    exp = +vm.experience(),
   
     calculated = vm.calculated,
     calculatedResult = vm.calculatedResult,
@@ -224,37 +224,59 @@ function calculate() {
       expPer: experience.training[level].toLocaleString(),
       repeat: trainingRequired[level] - (Math.floor(result.level.currentExp / experience.training[level])),
       thavnairianOnion: level >= 10,
+      total: trainingRequired[level],
+      toNext: Math.floor(((100 / trainingRequired[level]) * (Math.floor(result.level.currentExp / experience.training[level]))) * 100) / 100,
       
       level: level
     },
     to10: {
-      repeat: 0
+      repeat: 0,
+      total: 0,
+      progress: 0
     },
     to15: {
-      repeat: 0
+      repeat: 0,
+      total: 0,
+      progress: 0
     },
     to20: {
-      repeat: 0
+      repeat: 0,
+      total: 0,
+      progress: 0
     }
   }
   
   result.challenges = {
     next: {
-      expFull: ((experience.levels[level] / 100) * 15).toLocaleString(),
+      expFull: ((experience.levels[level] / 100) * 15),
       repeat: Math.ceil(result.level.toNext / ((experience.levels[level] / 100) * 15)),
+      progress: Math.floor((100 / 7) * (7 - Math.ceil(result.level.toNext / ((experience.levels[level] / 100) * 15))) * 100) / 100,
       
       level: level
     },
     to10: {
-      repeat: Math.ceil(result.level.toNext / ((experience.levels[level] / 100) * 15)) + Math.floor((experience.levels.length - level - 11) * 6.666666666666667)
+      repeat: Math.ceil(result.level.toNext / ((experience.levels[level] / 100) * 15)) + Math.floor((experience.levels.length - level - 11) * 6.666666666666667),
+      total: Math.ceil((100 / 15) * 10),
+      progress: 0
     },
     to15: {
-      repeat: Math.ceil(result.level.toNext / ((experience.levels[level] / 100) * 15)) + Math.floor((experience.levels.length - level - 6) * 6.666666666666667)
+      repeat: Math.ceil(result.level.toNext / ((experience.levels[level] / 100) * 15)) + Math.floor((experience.levels.length - level - 6) * 6.666666666666667),
+      total: Math.ceil((100 / 15) * 15),
+      progress: 0
     },
     to20: {
-      repeat: Math.ceil(result.level.toNext / ((experience.levels[level] / 100) * 15)) + Math.floor((experience.levels.length - level - 1) * 6.666666666666667)
+      repeat: Math.ceil(result.level.toNext / ((experience.levels[level] / 100) * 15)) + Math.ceil((experience.levels.length - level - 1) * 6.666666666666667),
+      total: Math.ceil((100 / 15) * 20),
+      progress: 0
     }
   }
+  
+  result.challenges.to10.progress = Math.floor((100 / result.challenges.to10.total) * (result.challenges.to10.total - result.challenges.to10.repeat) * 100) / 100;
+  result.challenges.to10.progress = result.challenges.to10.progress < 100 ? result.challenges.to10.progress : 100;
+  result.challenges.to15.progress = Math.floor((100 / result.challenges.to15.total) * (result.challenges.to15.total - result.challenges.to15.repeat) * 100) / 100;
+  result.challenges.to15.progress = result.challenges.to15.progress < 100 ? result.challenges.to15.progress : 100;
+  result.challenges.to20.progress = Math.floor((100 / result.challenges.to20.total) * (result.challenges.to20.total - result.challenges.to20.repeat) * 100) / 100;
+  result.challenges.to20.progress = result.challenges.to20.progress < 100 ? result.challenges.to20.progress : 100;
   
   for (var i = level; i < experience.levels.length; i++) {
     if (i === 0)
@@ -284,7 +306,20 @@ function calculate() {
     result.training.to20.repeat = isNaN(result.training.to20.repeat) ? trainingRequired[i] : result.training.to20.repeat + trainingRequired[i];
   }
   
-  result.training.to20.repeat = result.training.to20.repeat.toLocaleString();
+  for (i = 0; i < trainingRequired.length; i++) {
+    if (i < 10) {
+      result.training.to10.total += trainingRequired[i];
+    }
+    if (i < 15) {
+      result.training.to15.total += trainingRequired[i];
+    }
+    
+    result.training.to20.total += trainingRequired[i];
+  }
+  
+  result.training.to10.progress = Math.floor(((100 / result.training.to10.total) * (result.training.to10.total - result.training.to10.repeat)) * 100) / 100;
+  result.training.to15.progress = Math.floor(((100 / result.training.to15.total) * (result.training.to15.total - result.training.to15.repeat)) * 100) / 100;
+  result.training.to20.progress = Math.floor(((100 / result.training.to20.total) * (result.training.to20.total - result.training.to20.repeat)) * 100) / 100;
   
   calculatedResult(result);
   calculated(true);
