@@ -10,6 +10,9 @@
     <meta property="og:url" content="http://jamesdonnelly.github.io/xiv-chocobo-raising/">
     <meta property="og:image" content="http://jamesdonnelly.github.io/xiv-chocobo-raising/assets/FINALFANTASY_XIV_20_PUB_34.png">
     
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
     <link rel="image_src" href="http://jamesdonnelly.github.io/xiv-chocobo-raising/favicon.png">
     <link rel="icon" type="image/png" href="http://jamesdonnelly.github.io/xiv-chocobo-raising/favicon.png">
     
@@ -29,7 +32,7 @@
             <br class="visible-xs visible-sm">
           </div>
           <div class="col-xs-12 col-md-4">
-            <input data-bind="disable: !level(), valueUpdate: 'input', value: experience, attr: { max: experienceMax, placeholder: 'Experience (0-' + experienceMax() + ')' }" class="form-control input-lg" type="number" id="experience" min="0" max="99" placeholder="Experience" disabled />
+            <input data-bind="disable: !level(), valueUpdate: 'input', value: experience, attr: { max: experienceMax, placeholder: 'Experience (0-' + (+experienceMax() - 1) + ')' }" class="form-control input-lg" type="number" id="experience" min="0" max="99" placeholder="Experience" disabled />
             <br class="visible-xs visible-sm">
           </div>
           <div class="col-xs-6 col-md-2">
