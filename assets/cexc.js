@@ -104,7 +104,7 @@ var
     
     level: ko.observable(levelFromUrl !== null && +levelFromUrl >= 0 && +levelFromUrl <= 19 ? +levelFromUrl : null),
     experience: ko.observable(experienceFromUrl || null),
-    experienceMax: ko.observable(levelFromUrl !== null && +levelFromUrl >= 0 && +levelFromUrl <= 19 ? experience.levels[+levelFromUrl] - 1 : null),
+    experienceMax: ko.observable(levelFromUrl !== null && +levelFromUrl >= 0 && +levelFromUrl <= 19 ? experience.levels[+levelFromUrl] - 1 : experience.levels[experience.levels.length - 1] - 1),
     
     clear: clear,
     calculate: calculate,
